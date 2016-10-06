@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<info>
+    <id>cernbox_nice</id>
+    <name>Cernbox Nice</name>
+    <description>CERNBox CERN NICE API</description>
+    <licence>AGPL</licence>
+    <author>Hugo Gonzalez Labrador</author>
+    <version>8.2.2</version>
+    <namespace>CernBoxNice</namespace>
+    <category>other</category>
+    <dependencies>
+        <owncloud min-version="8.2.2" />
+    </dependencies>
+</info>
