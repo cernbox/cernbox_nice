@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<info>
+    <id>cernboxnice</id>
+    <name>Cernbox Nice</name>
+    <description>My first ownCloud app</description>
+    <licence>AGPL</licence>
+    <author>Hugo Gonzalez Labrador</author>
+    <version>0.0.1</version>
+    <namespace>CernboxNice</namespace>
+    <category>other</category>
+    <dependencies>
+        <owncloud min-version="9.0" />
+    </dependencies>
+</info>
