@@ -19,7 +19,6 @@
  */
 return [
     'routes' => [
-	   ['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
-	   ['name' => 'page#do_echo', 'url' => '/echo', 'verb' => 'POST'],
+	   ['name' => 'page#create_home_dir', 'url' => '/createhomedir/{username}', 'verb' => 'POST'],
     ]
 ];

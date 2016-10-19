@@ -9,6 +9,6 @@
     <namespace>CernboxNice</namespace>
     <category>other</category>
     <dependencies>
-        <owncloud min-version="9.0" />
+        <owncloud min-version="8.2.2"/>
     </dependencies>
 </info>
