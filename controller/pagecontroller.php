@@ -22,14 +22,28 @@ class PageController extends Controller {
 	private $secret;
 	private $userId;
 	private $logger;
-	protected $instanceManager;
+	private $instanceManager;
+	private $dirsToCheck = ["Desktop" => false, "Documents" => false, "Music" => false, "Pictures" => false, "Videos" => false];
 
 	public function __construct($AppName, IRequest $request, $UserId){
 		parent::__construct($AppName, $request);
 		$this->userId = $UserId;
-		$this->secret = \OC::$server->getConfig()->getSystemValue("cernbox.nice.secret");
+		$this->secret = \OC::$server->getConfig()->getSystemValue("cbox.nice.secret");
 		$this->logger = \OC::$server->getLogger();
 		$this->instanceManager = \OC::$server->getCernBoxEosInstanceManager();
+	}
+
+	private function getSecret() {
+		$headers = getallheaders();
+		$auth = isset($headers['Authorization']) ? $headers['Authorization'] : null;
+		if(!$auth) {
+			return false;
+		}
+		$parts = explode(" ", $auth);
+		if (count($parts) < 2) {
+			return false;
+		}
+		return $parts[1];
 	}
 
 	/**
@@ -37,13 +51,63 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 * @PublicPage
 	 */
-	public function createHomeDir($username, $secret, $dirs) {
+	public function checkHomeDir($username, $dirs) {
 		// validate token is correct, else 401
 		if(!$this->secret) {
 			$this->logger->error("cernbox.nice.secret has not been defined in the config.php file");
 			return new DataResponse(null, Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
-		if($this->secret !== $secret) {
+		if($this->secret !== $this->getSecret()) {
+			var_dump($secret);
+			$this->logger->error("access to cernboxnice denied because secrets do not match");
+			return new DataResponse(null, Http::STATUS_UNAUTHORIZED);
+		}
+		if(!$username) {
+			$this->logger->error("username cannot be empty");
+			$error = array(
+				"code" => 1,
+				"msg" => "username cannot be empty"
+			);
+			return new DataResponse($error, Http::STATUS_BAD_REQUEST);
+		}
+
+		$uidAndGid = \OC::$server->getCernBoxEosUtil()->getUidAndGidForUsername($username);
+		if($uidAndGid === false) {
+			$this->logger->error("cernboxnice: user($username) has not a valid uid");
+			$error = array(
+				"code" => 2,
+				"msg" => "Your account ($username) has no computing group assigned. <br> Please use the CERN Account Service to fix this.  You may also check out <a href=\"https://cern.service-now.com/service-portal/article.do?n=KB0002981\">CERNBOX FAQ</a> for additional information. <br> If the problem persists then please report it via CERN Service Portal."
+			);
+			return new DataResponse($error, Http::STATUS_BAD_REQUEST);
+		}
+
+		$info = $this->instanceManager->get($username, 'files'); // home
+		if($info === false)  { // home dir not exist
+			return new DataResponse(null, Http::STATUS_NOT_FOUND);
+		}
+
+		foreach($this->dirsToCheck as $dir => $exist) {
+			$path = "files/" . $dir;
+			$info = $this->instanceManager->get($username, $path);
+			if($info !== false) {
+				$this->dirsToCheck[$dir] = true;
+			}
+		}
+		return new DataResponse(['dirs' => $this->dirsToCheck]);
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * @PublicPage
+	 */
+	public function createHomeDir($username, $dirs) {
+		// validate token is correct, else 401
+		if(!$this->secret) {
+			$this->logger->error("cernbox.nice.secret has not been defined in the config.php file");
+			return new DataResponse(null, Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
+		if($this->secret !== $this->getSecret()) {
 			$this->logger->error("access to cernboxnice denied because secrets do not match");
 			return new DataResponse(null, Http::STATUS_UNAUTHORIZED);
 		}
