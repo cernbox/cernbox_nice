@@ -58,7 +58,6 @@ class PageController extends Controller {
 			return new DataResponse(null, Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 		if($this->secret !== $this->getSecret()) {
-			var_dump($secret);
 			$this->logger->error("access to cernboxnice denied because secrets do not match");
 			return new DataResponse(null, Http::STATUS_UNAUTHORIZED);
 		}
