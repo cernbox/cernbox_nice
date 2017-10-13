@@ -2,13 +2,13 @@
 <info>
     <id>cernboxnice</id>
     <name>Cernbox Nice</name>
-    <description>My first ownCloud app</description>
+    <description>Provides API to query homedir states for DFS migration</description>
     <licence>AGPL</licence>
     <author>Hugo Gonzalez Labrador</author>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <namespace>CernboxNice</namespace>
     <category>other</category>
     <dependencies>
-        <owncloud min-version="8.2.2"/>
+        <owncloud min-version="9.1.0"/>
     </dependencies>
 </info>
