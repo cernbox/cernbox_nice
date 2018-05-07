@@ -23,7 +23,7 @@ class PageController extends Controller {
 	private $userId;
 	private $logger;
 	private $instanceManager;
-	private $dirsToCheck = ["Desktop" => false, "Documents" => false, "Music" => false, "Pictures" => false, "Videos" => false];
+	private $dirsToCheck = ["Favorites" => false, "Links" => false,  "Desktop" => false, "Documents" => false, "Music" => false, "Pictures" => false, "Videos" => false];
 
 	public function __construct($AppName, IRequest $request, $UserId){
 		parent::__construct($AppName, $request);
